@@ -1,28 +1,27 @@
-COMPOSE ?= docker compose
 SERVICE ?= api
 
 .PHONY: run down build exec test create-migration migrate collect-static
 
 run:
-	$(COMPOSE) up
+	docker compose up -d
 
 down:
-	$(COMPOSE) down
+	docker compose down
 
 build:
-	$(COMPOSE) build
+	docker compose build
 
-exec:
-	$(COMPOSE) exec $(SERVICE) sh
+shell:
+	docker exec -ti $(SERVICE) python manage.py shell
 
 test:
-	$(COMPOSE) exec $(SERVICE) pytest
+	docker exec $(SERVICE) python manage.py test
 
 create-migration:
-	$(COMPOSE) exec $(SERVICE) python manage.py makemigrations
+	docker exec $(SERVICE) python manage.py makemigrations
 
 migrate:
-	$(COMPOSE) exec $(SERVICE) python manage.py migrate
+	docker exec $(SERVICE) python manage.py migrate
 
 collect-static:
-	$(COMPOSE) exec $(SERVICE) python manage.py collectstatic --noinput --clear
+	docker exec $(SERVICE) python manage.py collectstatic --noinput --clear
