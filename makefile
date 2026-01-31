@@ -12,7 +12,7 @@ build:
 	docker compose build
 
 shell:
-	docker exec -ti $(SERVICE) python manage.py shell
+	docker exec -ti $(SERVICE) bash
 
 test:
 	docker exec $(SERVICE) python manage.py test
@@ -25,3 +25,6 @@ migrate:
 
 collect-static:
 	docker exec $(SERVICE) python manage.py collectstatic --noinput --clear
+
+load-occurrences:
+	docker exec $(SERVICE) python manage.py load_occurrences

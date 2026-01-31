@@ -8,6 +8,7 @@ services:
       - .env
     volumes:
       - ./staticfiles:/app/staticfiles
+      - ./:/app
     depends_on:
       - db
     restart: unless-stopped

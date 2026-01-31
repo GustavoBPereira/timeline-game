@@ -1,0 +1,23 @@
+from django.test import TestCase, Client
+from timeline.core.usecases import new_match
+
+class CreateMatchTestCase(TestCase):
+
+    def test_success(self):
+        client = Client()
+    
+        response = client.get(f'/api/match/')
+        self.assertEqual(response.status_code, 200)
+
+        match_data = response.json()
+        self.assertDictEqual(match_data, {
+            "id": match_data["id"],
+            "player_hand": match_data["player_hand"],
+            "timeline": match_data["timeline"],
+            "remaining_life": 3,
+            "remaining_deck": match_data["remaining_deck"],
+            "status": "ongoing",
+        })
+        self.assertEqual(len(match_data["player_hand"]), 1)
+        self.assertEqual(len(match_data["timeline"]), 1)
+        self.assertIsNone(match_data["player_hand"][0]["year"])
