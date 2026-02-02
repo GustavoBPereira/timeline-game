@@ -34,11 +34,11 @@ def submit_occurence_on_match(match_id: int, occurrence_id: int, position: int):
     
     correct_submition = False
     if position == 0:
-        correct_submition = timeline[0].year > played_occurence.year
+        correct_submition = timeline[0].year >= played_occurence.year
     elif position < len(timeline):
-        correct_submition = timeline[position - 1].year < played_occurence.year < timeline[position].year
+        correct_submition = timeline[position - 1].year <= played_occurence.year <= timeline[position].year
     elif position == len(timeline):
-        correct_submition = timeline.last().year < played_occurence.year
+        correct_submition = timeline.last().year <= played_occurence.year
     else:
         raise ValueError("Invalid position")
     
@@ -56,6 +56,10 @@ def submit_occurence_on_match(match_id: int, occurrence_id: int, position: int):
         match.player_hand.add(drawed_card)
         match.deck.remove(drawed_card)
     match.save()
+
+    if match.deck.count() == 0 and match.player_hand.count() == 0:
+        match.status = Match.StatusChoices.WIN
+        match.save()
 
     return {
         "status": "correct" if correct_submition else "incorrect",
