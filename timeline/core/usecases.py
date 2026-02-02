@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 def new_match():
-    selected_occurrences = list(Occurrence.objects.order_by('?')[:15])
+    selected_occurrences = list(Occurrence.objects.order_by('?')[:5])
     starting_hand = selected_occurrences[0]
     starting_timeline = selected_occurrences[1]
     game = Game.objects.create(

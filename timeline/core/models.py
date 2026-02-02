@@ -56,7 +56,7 @@ class Match(BaseModel):
         return {
             'id': self.id,
             'player_hand': [occurrence.as_dict(hide_year=True) for occurrence in self.player_hand.all()],
-            'timeline': [occurrence.as_dict() for occurrence in self.timeline.all()],
+            'timeline': [occurrence.as_dict() for occurrence in self.timeline.order_by('year').all()],
             'remaining_deck': self.deck.count(),
             'remaining_life': self.remaining_life,
             'status': self.status,
