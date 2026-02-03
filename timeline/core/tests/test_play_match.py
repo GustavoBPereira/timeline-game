@@ -4,7 +4,7 @@ from timeline.core.usecases import new_match
 from timeline.core.models import Occurrence, Match
 
 class PlayMatchTestCase(TestCase):
-    maxDiff = None
+
     def test_correct_play(self):
         start_match = new_match()
         client = Client()
@@ -173,3 +173,21 @@ class PlayMatchTestCase(TestCase):
                 "status": "win",
             }
         )
+    
+    def test_try_to_play_with_a_card_that_dont_exists_on_player_hands(self):
+        start_match = new_match()
+        client = Client()
+
+        occurrence = Occurrence.objects.create(
+            title="Invalid Card",
+            summary="This card is not in player's hand",
+            year=2000
+        )
+        occurrence.save()
+
+        response = client.post(f'/api/match/{start_match["id"]}/', content_type='application/json', data={
+            "occurrence_id": occurrence.id,
+            "position": 1
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {"error": "Occurrence not in player's hand"})

@@ -3,6 +3,8 @@ from django.http import JsonResponse, HttpResponseNotAllowed
 from django.views import View
 from django.forms.models import model_to_dict
 
+from timeline.core.models import Occurrence
+
 from .usecases import new_match, get_match_by_id, submit_occurence_on_match
 
 
@@ -24,7 +26,13 @@ class MatchDetailView(View):
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-        match_result = submit_occurence_on_match(match_id, occurrence_id=payload["occurrence_id"], position=payload["position"])
+        match = get_match_by_id(match_id, as_dict=False)
+        played_occurence = Occurrence.objects.get(id=payload["occurrence_id"])
+
+        if played_occurence not in match.player_hand.all():
+            return JsonResponse({"error": "Occurrence not in player's hand"}, status=400)
+
+        match_result = submit_occurence_on_match(match, played_occurence, position=payload["position"])
         if not match_result:
             return JsonResponse({"error": "Not found"}, status=404)
 

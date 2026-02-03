@@ -26,9 +26,7 @@ def get_match_by_id(match_id, as_dict=True):
         return None
     return match.as_dict() if as_dict else match
 
-def submit_occurence_on_match(match_id: int, occurrence_id: int, position: int):
-    match = get_match_by_id(match_id, as_dict=False)
-    played_occurence = Occurrence.objects.get(id=occurrence_id)
+def submit_occurence_on_match(match, played_occurence, position: int):
 
     timeline = match.timeline.order_by('year')
     
