@@ -4,7 +4,7 @@ from timeline.core.usecases import new_match
 from timeline.core.models import Occurrence, Match
 
 class PlayMatchTestCase(TestCase):
-
+    maxDiff = None
     def test_correct_play(self):
         start_match = new_match()
         client = Client()
@@ -31,6 +31,7 @@ class PlayMatchTestCase(TestCase):
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 3,
                 "remaining_deck": start_match["remaining_deck"] - 1,
+                "mistakes": [],
                 "status": "ongoing",
             }
         )
@@ -53,6 +54,7 @@ class PlayMatchTestCase(TestCase):
         match_data = response.json()
         self.assertNotEqual(start_match, match_data["match"])
         self.assertEqual(match_data["status"], "incorrect")
+        mistake = Occurrence.objects.get(id=start_match["player_hand"][0]["id"]).as_dict()
 
         self.assertDictEqual(
             match_data["match"],
@@ -62,6 +64,7 @@ class PlayMatchTestCase(TestCase):
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 2,
                 "remaining_deck": start_match["remaining_deck"] - 1,
+                "mistakes": [mistake],
                 "status": "ongoing",
             }
         )
@@ -76,7 +79,7 @@ class PlayMatchTestCase(TestCase):
         occurence.save()
 
         match = Match.objects.get(id=start_match["id"])
-        match.remaining_life = 1
+        match.remaining_life = 2
         match.save()
 
         response = client.post(f'/api/match/{start_match["id"]}/', content_type='application/json', data={
@@ -89,6 +92,34 @@ class PlayMatchTestCase(TestCase):
         self.assertNotEqual(start_match, match_data["match"])
         self.assertEqual(match_data["status"], "incorrect")
 
+        first_mistake = Occurrence.objects.get(id=start_match["player_hand"][0]["id"]).as_dict()
+
+        self.assertDictEqual(
+            match_data["match"],
+            {
+                "id": match_data["match"]["id"],
+                "player_hand": ANY,
+                "timeline": match_data["match"]["timeline"],
+                "remaining_life": 1,
+                "remaining_deck": start_match["remaining_deck"] - 1,
+                "mistakes": [first_mistake],
+                "status": "ongoing",
+            }
+        )
+
+        occurence = Occurrence.objects.get(id=match_data["match"]["player_hand"][0]["id"])
+        occurence.year = 9999
+        occurence.save()
+        second_mistake = Occurrence.objects.get(id=match_data["match"]["player_hand"][0]["id"]).as_dict()
+        response = client.post(f'/api/match/{start_match["id"]}/', content_type='application/json', data={
+            "occurrence_id": match_data["match"]["player_hand"][0]["id"],
+            "position": 0
+        })
+
+        match_data = response.json()
+        self.assertNotEqual(start_match, match_data["match"])
+        self.assertEqual(match_data["status"], "incorrect")
+
         self.assertDictEqual(
             match_data["match"],
             {
@@ -96,10 +127,12 @@ class PlayMatchTestCase(TestCase):
                 "player_hand": ANY,
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 0,
-                "remaining_deck": start_match["remaining_deck"] - 1,
+                "remaining_deck": start_match["remaining_deck"] - 2,
+                "mistakes": [first_mistake, second_mistake],
                 "status": "lose",
             }
         )
+
 
     def test_win(self):
         start_match = new_match()
@@ -136,6 +169,7 @@ class PlayMatchTestCase(TestCase):
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 3,
                 "remaining_deck": 0,
+                "mistakes": [],
                 "status": "win",
             }
         )

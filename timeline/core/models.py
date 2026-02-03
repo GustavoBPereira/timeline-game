@@ -44,6 +44,7 @@ class Match(BaseModel):
     timeline = models.ManyToManyField('Occurrence', related_name='timeline_occurrences')
     player_hand = models.ManyToManyField('Occurrence', related_name='player_hand')
     deck = models.ManyToManyField('Occurrence', related_name='match_deck')
+    mistakes = models.ManyToManyField('Occurrence', related_name='mistakes')
     
     remaining_life = models.IntegerField(default=3)
     status = models.CharField(
@@ -57,6 +58,7 @@ class Match(BaseModel):
             'id': self.id,
             'player_hand': [occurrence.as_dict(hide_year=True) for occurrence in self.player_hand.all()],
             'timeline': [occurrence.as_dict() for occurrence in self.timeline.order_by('year').all()],
+            'mistakes': [occurrence.as_dict() for occurrence in self.mistakes.all()],
             'remaining_deck': self.deck.count(),
             'remaining_life': self.remaining_life,
             'status': self.status,

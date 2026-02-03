@@ -46,6 +46,7 @@ def submit_occurence_on_match(match_id: int, occurrence_id: int, position: int):
         match.timeline.add(played_occurence)
     else:
         match.remaining_life -= 1
+        match.mistakes.add(played_occurence)
         if match.remaining_life <= 0:
             match.status = Match.StatusChoices.LOSE
         

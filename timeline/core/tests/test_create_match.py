@@ -16,6 +16,7 @@ class CreateMatchTestCase(TestCase):
             "timeline": match_data["timeline"],
             "remaining_life": 3,
             "remaining_deck": match_data["remaining_deck"],
+            "mistakes": [],
             "status": "ongoing",
         })
         self.assertEqual(len(match_data["player_hand"]), 1)
