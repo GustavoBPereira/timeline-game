@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    container_name: timeline-api
+    container_name: chronoguess-api
     
     ports:
       - "8000:8000"

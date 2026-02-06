@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponseNotAllowed
 from django.views import View
 from django.forms.models import model_to_dict
 
-from timeline.core.models import Occurrence
+from chronoguess.core.models import Occurrence
 
 from .usecases import new_match, get_match_by_id, submit_occurence_on_match
 

@@ -15,7 +15,7 @@ services:
 
   db:
     image: postgres:17
-    container_name: timeline-db
+    container_name: chronoguess-db
     environment:
       POSTGRES_DB: django
       POSTGRES_USER: django
