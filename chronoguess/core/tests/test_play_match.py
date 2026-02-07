@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from unittest.mock import ANY
-from timeline.core.usecases import new_match
-from timeline.core.models import Occurrence, Match
+from chronoguess.core.usecases import new_match
+from chronoguess.core.models import Occurrence, Match
 
 class PlayMatchTestCase(TestCase):
 

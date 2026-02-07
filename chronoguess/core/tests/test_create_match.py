@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from timeline.core.usecases import new_match
+from chronoguess.core.usecases import new_match
 
 class CreateMatchTestCase(TestCase):
 

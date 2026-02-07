@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from timeline.core.models import Occurrence
+from chronoguess.core.models import Occurrence
 
 class Command(BaseCommand):
     help = "Closes the specified poll for voting"
