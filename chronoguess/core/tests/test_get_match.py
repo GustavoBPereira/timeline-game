@@ -4,7 +4,7 @@ from chronoguess.core.usecases import new_match
 class GetMatchTestCase(TestCase):
 
     def test_success(self):
-        match = new_match()
+        match = new_match(lang="en")
         client = Client()
     
         response = client.get(f'/api/match/{match["id"]}/')

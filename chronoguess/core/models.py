@@ -10,10 +10,20 @@ class BaseModel(models.Model):
 
 
 class Occurrence(BaseModel):
+        
+    class LanguageChoices(models.TextChoices):
+        ENGLISH = 'en', 'English'
+        PORTUGUESE = 'pt-br', 'Portuguese'
+
     title = models.CharField(max_length=255)
     summary = models.TextField()
     photo_url = models.URLField(blank=True, null=True)
     year = models.IntegerField()
+    language = models.CharField(
+        max_length=20,
+        choices=LanguageChoices,
+        default=LanguageChoices.ENGLISH
+    )
 
     def as_dict(self, hide_year=False):
         return {

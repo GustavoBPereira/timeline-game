@@ -10,12 +10,13 @@ class Command(BaseCommand):
         with open(f"{settings.BASE_DIR}/occurrences.csv", 'r') as file:
             for line in file.readlines()[1:]:
                 parts = line.strip().split(',')
-                if len(parts) != 4:
+                if len(parts) != 5:
                     continue
-                title, summary, photo_url, year = parts
+                title, summary, photo_url, year, lang = parts
                 Occurrence.objects.get_or_create(
                     title=title,
                     summary=summary,
                     photo_url=photo_url,
-                    year=int(year)
+                    year=int(year),
+                    language=lang
                 )

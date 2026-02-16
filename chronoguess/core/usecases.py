@@ -2,8 +2,8 @@ from .models import Match, Game, Occurrence
 from django.core.exceptions import ObjectDoesNotExist
 
 
-def new_match():
-    selected_occurrences = list(Occurrence.objects.order_by('?')[:15])
+def new_match(lang: str):
+    selected_occurrences = list(Occurrence.objects.filter(language=lang).order_by('?')[:15])
     starting_hand = selected_occurrences[0]
     starting_timeline = selected_occurrences[1]
     game = Game.objects.create(

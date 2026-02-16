@@ -129,3 +129,10 @@ dmypy.json
 .pyre/
 
 staticfiles/
+
+occurrences.csv
+
+infra/terraform/.terraform
+infra/terraform/terraform.tfstate
+infra/terraform/terraform.tfstate.backup
+infra/terraform/.terraform.lock.hcl

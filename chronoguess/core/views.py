@@ -10,7 +10,10 @@ from .usecases import new_match, get_match_by_id, submit_occurence_on_match
 
 class MatchListView(View):
     def get(self, request):
-        return JsonResponse(new_match(), safe=False)
+        lang = request.GET.get("lang", "en")
+        if lang not in Occurrence.LanguageChoices:
+            return JsonResponse({"error": "Invalid language"}, status=400)
+        return JsonResponse(new_match(lang), safe=False)
 
 
 class MatchDetailView(View):

@@ -22,3 +22,9 @@ class CreateMatchTestCase(TestCase):
         self.assertEqual(len(match_data["player_hand"]), 1)
         self.assertEqual(len(match_data["timeline"]), 1)
         self.assertIsNone(match_data["player_hand"][0]["year"])
+    
+    def test_invalid_language(self):
+        client = Client()
+        response = client.get(f'/api/match/?lang=invalid')
+        self.assertEqual(response.status_code, 400)
+        self.assertDictEqual(response.json(), {"error": "Invalid language"})

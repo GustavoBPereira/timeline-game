@@ -6,7 +6,7 @@ from chronoguess.core.models import Occurrence, Match
 class PlayMatchTestCase(TestCase):
 
     def test_correct_play(self):
-        start_match = new_match()
+        start_match = new_match(lang="en")
         client = Client()
 
         occurence = Occurrence.objects.get(id=start_match["player_hand"][0]["id"])
@@ -37,8 +37,86 @@ class PlayMatchTestCase(TestCase):
         )
         self.assertNotEqual(start_match["player_hand"], match_data["match"]["player_hand"])
     
+    def test_same_year_earlier_play(self):
+        start_match = new_match(lang="en")
+        client = Client()
+
+        hand_occurence = Occurrence.objects.get(id=start_match["player_hand"][0]["id"])
+        hand_occurence.year = 9999
+        hand_occurence.save()
+
+
+        timeline_occurence = Occurrence.objects.get(id=start_match["timeline"][0]["id"])
+        timeline_occurence.year = 9999
+        timeline_occurence.save()
+
+
+        response = client.post(f'/api/match/{start_match["id"]}/', content_type='application/json', data={
+            "occurrence_id": start_match["player_hand"][0]["id"],
+            "position": 0
+        })
+        self.assertEqual(response.status_code, 200)
+
+        match_data = response.json()
+        self.assertNotEqual(start_match, match_data["match"])
+        self.assertEqual(match_data["status"], "correct")
+
+        self.assertDictEqual(
+            match_data["match"],
+            {
+                "id": match_data["match"]["id"],
+                "player_hand": ANY,
+                "timeline": match_data["match"]["timeline"],
+                "remaining_life": 3,
+                "remaining_deck": start_match["remaining_deck"] - 1,
+                "mistakes": [],
+                "status": "ongoing",
+            }
+        )
+        self.assertNotEqual(start_match["player_hand"], match_data["match"]["player_hand"])
+    
+
+    def test_same_year_later_play(self):
+        start_match = new_match(lang="en")
+        client = Client()
+
+        hand_occurence = Occurrence.objects.get(id=start_match["player_hand"][0]["id"])
+        hand_occurence.year = 9999
+        hand_occurence.save()
+
+
+        timeline_occurence = Occurrence.objects.get(id=start_match["timeline"][0]["id"])
+        timeline_occurence.year = 9999
+        timeline_occurence.save()
+
+
+        response = client.post(f'/api/match/{start_match["id"]}/', content_type='application/json', data={
+            "occurrence_id": start_match["player_hand"][0]["id"],
+            "position": 1
+        })
+        self.assertEqual(response.status_code, 200)
+
+        match_data = response.json()
+        self.assertNotEqual(start_match, match_data["match"])
+        self.assertEqual(match_data["status"], "correct")
+
+        self.assertDictEqual(
+            match_data["match"],
+            {
+                "id": match_data["match"]["id"],
+                "player_hand": ANY,
+                "timeline": match_data["match"]["timeline"],
+                "remaining_life": 3,
+                "remaining_deck": start_match["remaining_deck"] - 1,
+                "mistakes": [],
+                "status": "ongoing",
+            }
+        )
+        self.assertNotEqual(start_match["player_hand"], match_data["match"]["player_hand"])
+    
+
     def test_wrong_play(self):
-        start_match = new_match()
+        start_match = new_match(lang="en")
         client = Client()
 
         occurence = Occurrence.objects.get(id=start_match["player_hand"][0]["id"])
@@ -71,7 +149,7 @@ class PlayMatchTestCase(TestCase):
         self.assertNotEqual(start_match["player_hand"], match_data["match"]["player_hand"])
 
     def test_lose(self):
-        start_match = new_match()
+        start_match = new_match(lang="en")
         client = Client()
 
         occurence = Occurrence.objects.get(id=start_match["player_hand"][0]["id"])
@@ -135,7 +213,7 @@ class PlayMatchTestCase(TestCase):
 
 
     def test_win(self):
-        start_match = new_match()
+        start_match = new_match(lang="en")
         client = Client()
 
         match = Match.objects.get(id=start_match["id"])
@@ -175,7 +253,7 @@ class PlayMatchTestCase(TestCase):
         )
     
     def test_try_to_play_with_a_card_that_dont_exists_on_player_hands(self):
-        start_match = new_match()
+        start_match = new_match(lang="en")
         client = Client()
 
         occurrence = Occurrence.objects.create(
