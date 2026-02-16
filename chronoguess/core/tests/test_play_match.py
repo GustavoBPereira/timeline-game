@@ -30,7 +30,7 @@ class PlayMatchTestCase(TestCase):
                 "player_hand": ANY,
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 3,
-                "remaining_deck": start_match["remaining_deck"] - 1,
+                "timeline_size_goal": 12,
                 "mistakes": [],
                 "status": "ongoing",
             }
@@ -68,7 +68,7 @@ class PlayMatchTestCase(TestCase):
                 "player_hand": ANY,
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 3,
-                "remaining_deck": start_match["remaining_deck"] - 1,
+                "timeline_size_goal": 12,
                 "mistakes": [],
                 "status": "ongoing",
             }
@@ -107,7 +107,7 @@ class PlayMatchTestCase(TestCase):
                 "player_hand": ANY,
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 3,
-                "remaining_deck": start_match["remaining_deck"] - 1,
+                "timeline_size_goal": 12,
                 "mistakes": [],
                 "status": "ongoing",
             }
@@ -141,7 +141,7 @@ class PlayMatchTestCase(TestCase):
                 "player_hand": ANY,
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 2,
-                "remaining_deck": start_match["remaining_deck"] - 1,
+                "timeline_size_goal": 12,
                 "mistakes": [mistake],
                 "status": "ongoing",
             }
@@ -179,7 +179,7 @@ class PlayMatchTestCase(TestCase):
                 "player_hand": ANY,
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 1,
-                "remaining_deck": start_match["remaining_deck"] - 1,
+                "timeline_size_goal": 12,
                 "mistakes": [first_mistake],
                 "status": "ongoing",
             }
@@ -205,7 +205,7 @@ class PlayMatchTestCase(TestCase):
                 "player_hand": ANY,
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 0,
-                "remaining_deck": start_match["remaining_deck"] - 2,
+                "timeline_size_goal": 12,
                 "mistakes": [first_mistake, second_mistake],
                 "status": "lose",
             }
@@ -216,28 +216,21 @@ class PlayMatchTestCase(TestCase):
         start_match = new_match(lang="en")
         client = Client()
 
-        match = Match.objects.get(id=start_match["id"])
-        match.deck.clear()
-        match.player_hand.clear()
-        for occurrence_data in start_match["timeline"]:
-            occurrence = Occurrence.objects.get(id=occurrence_data["id"])
-            match.player_hand.add(occurrence)
-        match.save()
-
-        for occurrence_data in start_match["timeline"]:
-            occurrence = Occurrence.objects.get(id=occurrence_data["id"])
+        for player_hand in range(0, 11):
+            match = Match.objects.get(id=start_match["id"])
+            occurrence = match.player_hand.first()
             occurrence.year = 9999
             occurrence.save()
-
             response = client.post(f'/api/match/{start_match["id"]}/', content_type='application/json', data={
                 "occurrence_id": occurrence.id,
-                "position": len(match.timeline.all())
+                "position": 1
             })
             self.assertEqual(response.status_code, 200)
 
             match_data = response.json()
 
-        self.assertEqual(match_data["status"], "correct")
+            self.assertEqual(match_data["status"], "correct")
+            
 
         self.assertDictEqual(
             match_data["match"],
@@ -246,7 +239,7 @@ class PlayMatchTestCase(TestCase):
                 "player_hand": [],
                 "timeline": match_data["match"]["timeline"],
                 "remaining_life": 3,
-                "remaining_deck": 0,
+                "timeline_size_goal": 12,
                 "mistakes": [],
                 "status": "win",
             }

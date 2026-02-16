@@ -15,7 +15,7 @@ class CreateMatchTestCase(TestCase):
             "player_hand": match_data["player_hand"],
             "timeline": match_data["timeline"],
             "remaining_life": 3,
-            "remaining_deck": match_data["remaining_deck"],
+            "timeline_size_goal": 12,
             "mistakes": [],
             "status": "ongoing",
         })

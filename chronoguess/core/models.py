@@ -69,7 +69,7 @@ class Match(BaseModel):
             'player_hand': [occurrence.as_dict(hide_year=True) for occurrence in self.player_hand.all()],
             'timeline': [occurrence.as_dict() for occurrence in self.timeline.order_by('year').all()],
             'mistakes': [occurrence.as_dict() for occurrence in self.mistakes.all()],
-            'remaining_deck': self.deck.count(),
+            'timeline_size_goal': 12,
             'remaining_life': self.remaining_life,
             'status': self.status,
         }

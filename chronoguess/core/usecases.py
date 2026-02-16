@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 def new_match(lang: str):
-    selected_occurrences = list(Occurrence.objects.filter(language=lang).order_by('?')[:15])
+    selected_occurrences = list(Occurrence.objects.filter(language=lang).order_by('?')[:16])
     starting_hand = selected_occurrences[0]
     starting_timeline = selected_occurrences[1]
     game = Game.objects.create(
@@ -56,7 +56,8 @@ def submit_occurence_on_match(match, played_occurence, position: int):
         match.deck.remove(drawed_card)
     match.save()
 
-    if match.deck.count() == 0 and match.player_hand.count() == 0:
+    if match.timeline.count() == 12:
+        match.player_hand.clear()
         match.status = Match.StatusChoices.WIN
         match.save()
 
